@@ -11,6 +11,7 @@ This release upgrades the backend to mflux 0.10.x and keeps ComfyUI workflow com
 - Quantize options expanded: None, 3, 4, 5, 6, 8 (default 8)
 - MLX version hint in UI tooltips; recommend MLX >= 0.27.0
 - Metadata JSON includes both legacy and new fields; adds base_model, low_ram, mflux_version
+- HuggingFace downloads relocate to `models/Mflux` and expose helpers to check completion
 
 ## Breaking changes
 - Requires mflux 0.10.x (remove any 0.4.1 runtime)

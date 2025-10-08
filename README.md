@@ -67,7 +67,7 @@ Under MFlux/Air:
 Under MFlux/Pro:
 - Mflux Img2Img
 - Mflux Loras Loader
-- Mflux ControlNet Loader (auto-detects available mflux ControlNet checkpoints and falls back to bundled defaults)
+- Mflux ControlNet Loader
 
 ## Developer notes — additional nodes & tests
 
@@ -84,8 +84,6 @@ Tests added in the `tests/` folder include unit-level tests that:
 - Contain upscale-specific internals tests for converting ComfyUI IMAGE tensors and preserving backwards-compatibility (`tests/test_upscale_internals.py`).
 
 If you plan to extend the pack with more Flux tools (Kontext, In-Context LoRA, CatVTON, Concept-Attention), the existing tests and `Mflux_Comfy/Mflux_Core.py` retry-on-TypeError pattern are useful blueprints for handling API drift across mflux versions.
-
-See `docs/ROADMAP.md` for the structured development plan toward full mflux feature parity.
 
 ## Usage tips
 

@@ -4,12 +4,8 @@ import folder_paths
 import numpy as np
 import torch
 
-# Try to import ControlnetUtil from mflux; allow tests to disable the import via env
-_skip_controlnet_import = os.environ.get("MFLUX_COMFY_DISABLE_CONTROLNET_IMPORT") == "1"
-
+# Try to import ControlnetUtil from mflux; if unavailable or missing helpers, provide a local fallback
 try:
-    if _skip_controlnet_import:
-        raise ImportError("ControlNet import disabled via env")
     from mflux.controlnet.controlnet_util import ControlnetUtil  # type: ignore
     if not hasattr(ControlnetUtil, "preprocess_canny") or not hasattr(ControlnetUtil, "scale_image"):
         raise AttributeError("ControlnetUtil missing expected helpers")
@@ -318,35 +314,23 @@ class MfluxControlNetPipeline:
 class MfluxControlNetLoader:
     @classmethod
     def INPUT_TYPES(cls):
-        controlnet_models = cls._controlnet_choices()
-        default_model = controlnet_models[0] if controlnet_models else "InstantX/FLUX.1-dev-Controlnet-Canny"
+        controlnet_models = [
+            "InstantX/FLUX.1-dev-Controlnet-Canny",
+            "jasperai/Flux.1-dev-Controlnet-Upscaler",
+        ]
 
         input_dir = folder_paths.get_input_directory()
         files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
 
         return {
             "required": {
-                "model_selection": (controlnet_models, {"default": default_model, "tooltip": "Choose a ControlNet model. Canny=edges guidance, Upscaler=use original image to upscale."}),
+                "model_selection": (controlnet_models, {"default": "InstantX/FLUX.1-dev-Controlnet-Canny", "tooltip": "Choose a ControlNet model. Canny=edges guidance, Upscaler=use original image to upscale."}),
                 "image": (sorted(files), {"image_upload": True, "tooltip": "Upload or select the image to extract edges from."}),
                 "control_strength": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "How strongly to apply edge guidance (0-1)."}),
                 "save_canny": ("BOOLEAN", {"default": False, "label_on": "Save preview", "label_off": "Don't save", "tooltip": "Save the detected edges image to outputs/MFlux for reference."}),
             }
 
         }
-
-    @staticmethod
-    def _controlnet_choices() -> list[str]:
-        try:
-            from . import Mflux_Core as core
-            models = core.get_available_controlnet_models()
-            if models:
-                return models
-            return core.DEFAULT_CONTROLNET_MODELS.copy()
-        except Exception:
-            return [
-                "InstantX/FLUX.1-dev-Controlnet-Canny",
-                "jasperai/Flux.1-dev-Controlnet-Upscaler",
-            ]
 
     CATEGORY = "MFlux/Pro"
     RETURN_TYPES = ("MfluxControlNetPipeline", "INT", "INT", "IMAGE",)

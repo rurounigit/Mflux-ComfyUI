@@ -1,10 +1,7 @@
 import os
 import json
+from typing import Any, Dict, Optional
 
-try:
-    from huggingface_hub import snapshot_download
-except Exception:
-    snapshot_download = None  # type: ignore[assignment]
 from folder_paths import get_filename_list, get_output_directory, models_dir
 
 _skip_mflux_import = os.environ.get("MFLUX_COMFY_DISABLE_MFLUX_IMPORT") == "1"
@@ -41,8 +38,33 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
+
+def _ensure_hf_cache_root(root: str) -> tuple[str, str]:
+    """Force huggingface_hub to use our managed models directory."""
+    resolved_root = os.path.abspath(root)
+    hub_cache = os.path.join(resolved_root, "hub")
+    os.makedirs(resolved_root, exist_ok=True)
+    os.makedirs(hub_cache, exist_ok=True)
+    targets = {
+        "HF_HOME": resolved_root,
+        "HF_HUB_CACHE": hub_cache,
+        "HUGGINGFACE_HUB_CACHE": hub_cache,
+    }
+    for env_key, target in targets.items():
+        current = os.environ.get(env_key)
+        if current and os.path.abspath(current) != os.path.abspath(target):
+            print(f"[MFlux-ComfyUI] Redirecting {env_key} from {current} to {target}")
+        os.environ[env_key] = target
+    return resolved_root, hub_cache
+
 mflux_dir = os.path.join(models_dir, "Mflux")
+_HF_HOME_DIR, _HF_HUB_CACHE_DIR = _ensure_hf_cache_root(mflux_dir)
 create_directory(mflux_dir)
+
+try:
+    from huggingface_hub import snapshot_download
+except Exception:
+    snapshot_download = None  # type: ignore[assignment]
 
 def get_full_model_path(model_dir, model_name):
     return os.path.join(model_dir, model_name)
@@ -63,6 +85,31 @@ def _write_marker(dir_path: str, repo_id: str):
 
 def _has_marker(dir_path: str) -> bool:
     return os.path.exists(_marker_path(dir_path))
+
+
+def _read_marker(dir_path: str) -> Optional[Dict[str, Any]]:
+    try:
+        with open(_marker_path(dir_path), "r") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def get_model_download_info(model_version: str, root_dir: Optional[str] = None) -> Dict[str, Any]:
+    """Return download status and metadata for a given model version."""
+    base_dir = os.path.abspath(root_dir) if root_dir is not None else mflux_dir
+    model_dir = get_full_model_path(base_dir, model_version)
+    info: Dict[str, Any] = {"path": model_dir, "downloaded": False}
+    marker_data = _read_marker(model_dir)
+    if marker_data is not None:
+        info["downloaded"] = True
+        info["metadata"] = marker_data
+    return info
+
+
+def is_model_downloaded(model_version: str, root_dir: Optional[str] = None) -> bool:
+    """Convenience helper for status checks without inspecting the marker payload."""
+    return get_model_download_info(model_version, root_dir=root_dir)["downloaded"]
 
 def _looks_like_model_root(dir_path: str) -> bool:
     """Heuristic to decide if a directory is a model root.
