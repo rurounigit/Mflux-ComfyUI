@@ -1,6 +1,6 @@
 import os
 from folder_paths import models_dir
-from .Mflux_Core import get_lora_info, generate_image, save_images_with_metadata, infer_quant_bits, is_third_party_model
+from .Mflux_Core import get_lora_info, generate_image, save_images_with_metadata, infer_quant_bits
 
 # --- MFLUX 0.13.1 Imports ---
 try:
