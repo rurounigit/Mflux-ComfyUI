@@ -1,6 +1,6 @@
 import os
 from folder_paths import models_dir
-from .Mflux_Core import get_lora_info, generate_image, save_images_with_metadata, infer_quant_bits
+from .Mflux_Core import get_lora_info, generate_image, save_images_with_metadata, infer_quant_bits, is_third_party_model
 
 # --- MFLUX 0.13.1 Imports ---
 try:
@@ -88,9 +88,15 @@ class MfluxCustomModels:
 
         lora_paths, lora_scales = get_lora_info(Loras)
 
+        # Support HF repo ids with base_model; else use alias via from_name
+        if is_third_party_model(model) or "/" in str(model):
+            model_config = ModelConfig.from_name(model_name=model, base_model=base_model)
+        else:
+            model_config = ModelConfig.from_name(model_name=model, base_model=None)
+
         # mflux 0.13.1 Flux1 constructor
         flux = Flux1(
-            model_config=ModelConfig.from_name(model, base_model=base_model),
+            model_config=model_config,
             quantize=int(quantize),
             lora_paths=lora_paths,
             lora_scales=lora_scales
