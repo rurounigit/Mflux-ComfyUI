@@ -1,17 +1,17 @@
 [project]
 name = "mflux-comfyui"
-version = "2.0.0"
+version = "2.1.0"
 description = "Mflux integration for ComfyUI"
 license = { file = "LICENSE" }
 dependencies = [
-    "mflux==0.10.0",
-    "huggingface_hub>=0.24",
+    "mflux==0.13.1",
+    "huggingface_hub>=0.26.0",
 ]
 
 [project.urls]
-Repository = "https://github.com/joonsoome/Mflux-ComfyUI"
+Repository = "https://github.com/rurounigit/Mflux-ComfyUI"
 
 [tool.comfy]
-PublisherId = "joonsoome"
+PublisherId = "rurounigit"
 DisplayName = "Mflux-ComfyUI"
 Icon = "assets/icon.svg"
