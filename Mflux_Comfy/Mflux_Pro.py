@@ -1,5 +1,5 @@
 import os
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps  # ImageOps is strictly required here for exif_transpose and Canny
 import folder_paths
 import numpy as np
 import torch
@@ -10,7 +10,7 @@ try:
     if not hasattr(ControlnetUtil, "preprocess_canny") or not hasattr(ControlnetUtil, "scale_image"):
         raise AttributeError("ControlnetUtil missing expected helpers")
 except Exception:
-    from PIL import ImageFilter, ImageOps
+    from PIL import ImageFilter
 
     class ControlnetUtil:  # type: ignore
         @staticmethod
@@ -75,7 +75,13 @@ class MfluxImg2Img:
     @classmethod
     def INPUT_TYPES(cls):
         input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        files = []
+        # Added robustness check for CI environments where input_dir might not exist
+        try:
+            if os.path.exists(input_dir):
+                files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        except Exception:
+            pass
 
         return {
             "required": {
@@ -252,7 +258,12 @@ class MfluxLorasLoader:
     @classmethod
     def INPUT_TYPES(cls):
         lora_base_path = folder_paths.models_dir
-        loras_relative = ["None"] + folder_paths.get_filename_list("loras")
+        # Robust check for loras directory
+        loras_relative = ["None"]
+        try:
+            loras_relative += folder_paths.get_filename_list("loras")
+        except Exception:
+            pass
 
         inputs = {
             "required": {
@@ -320,7 +331,12 @@ class MfluxControlNetLoader:
         ]
 
         input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        files = []
+        try:
+            if os.path.exists(input_dir):
+                files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        except Exception:
+            pass
 
         return {
             "required": {
@@ -429,10 +445,12 @@ class MfluxUpscale:
         # `image` combo and `upload` IMAGEUPLOAD widgets present (they are optional
         # and ignored when using `input_image`). New workflows should prefer `input_image`.
         input_dir = folder_paths.get_input_directory()
+        files = []
         try:
-            files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+            if os.path.exists(input_dir):
+                files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
         except Exception:
-            files = []
+            pass
 
         return {
             "required": {
@@ -587,7 +605,12 @@ class MfluxFill:
     @classmethod
     def INPUT_TYPES(cls):
         input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        files = []
+        try:
+            if os.path.exists(input_dir):
+                files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        except Exception:
+            pass
 
         return {
             "required": {
@@ -674,7 +697,12 @@ class MfluxDepth:
     @classmethod
     def INPUT_TYPES(cls):
         input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        files = []
+        try:
+            if os.path.exists(input_dir):
+                files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        except Exception:
+            pass
 
         return {
             "required": {
@@ -765,7 +793,12 @@ class MfluxRedux:
     @classmethod
     def INPUT_TYPES(cls):
         input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        files = []
+        try:
+            if os.path.exists(input_dir):
+                files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        except Exception:
+            pass
 
         return {
             "required": {
