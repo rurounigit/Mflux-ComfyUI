@@ -1,4 +1,4 @@
-<h1 align="center">Mflux-ComfyUI</h1>
+<h1 align="center">Mflux-ComfyUI 2.1.0</h1>
 
 <p align="center">
     <strong>ComfyUI nodes for mflux 0.13.1 (Apple Silicon/MLX)</strong><br/>
@@ -41,7 +41,7 @@ This version brings significant backend enhancements:
    ```
 2. Clone the repository:
    ```bash
-   git clone https://github.com/joonsoome/Mflux-ComfyUI.git
+   git clone https://github.com/rurounigit/Mflux-ComfyUI.git
    ```
 3. Activate your ComfyUI virtual environment and install dependencies:
    ```bash
