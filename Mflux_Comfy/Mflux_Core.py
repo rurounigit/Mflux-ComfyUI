@@ -6,11 +6,13 @@ import torch
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 import folder_paths
+import comfy.utils  # Required for the progress bar
 
 # --- MFLUX 0.13.1 Imports ---
 try:
     import mlx.core as mx
     from mflux.models.common.config import ModelConfig
+    from mflux.callbacks.callback_registry import CallbackRegistry
     from mflux.models.flux.variants.txt2img.flux import Flux1
     from mflux.models.flux.variants.controlnet.flux_controlnet import Flux1Controlnet
     from mflux.models.flux.variants.fill.flux_fill import Flux1Fill
@@ -24,6 +26,15 @@ from .Mflux_Pro import MfluxControlNetPipeline
 
 # Cache for loaded models
 flux_cache = {}
+
+class ComfyUIProgressBarCallback:
+    """Callback to update ComfyUI progress bar during mflux generation."""
+    def __init__(self, total_steps):
+        self.pbar = comfy.utils.ProgressBar(total_steps)
+
+    def call_in_loop(self, t, **kwargs):
+        # Update ComfyUI progress bar by 1 step
+        self.pbar.update(1)
 
 def _get_mflux_version() -> str:
     try:
@@ -127,7 +138,7 @@ def generate_image(prompt, model, seed, width, height, steps, guidance, quantize
 
     # If user selected the specific 4-bit repo in the dropdown, ensure we treat it as z-image
     if "z-image" in str(model).lower():
-        model_resolved = model # Pass the full repo name (e.g. filipstrand/...) to load_or_create_flux
+        model_resolved = model
 
     q_val = None if quantize in (None, "None") else int(quantize)
     lora_paths, lora_scales = get_lora_info(Loras)
@@ -200,14 +211,22 @@ def generate_image(prompt, model, seed, width, height, steps, guidance, quantize
 
     print(f"[MFlux-ComfyUI] Generating ({variant}) seed: {seed_val}, steps: {steps}, dims: {width}x{height}")
 
-    # 5. Generate
+    # 5. Register Progress Bar Callback
+    # Reset callbacks to ensure we don't have old ones attached
+    flux.callbacks = CallbackRegistry()
+
+    # Create and register the ComfyUI progress bar
+    pbar = ComfyUIProgressBarCallback(total_steps=steps)
+    flux.callbacks.register(pbar)
+
+    # 6. Generate
     try:
         generated_result = flux.generate_image(**gen_kwargs)
     except Exception as e:
         print(f"[MFlux-ComfyUI] Error during generation: {e}")
         raise e
 
-    # 6. Process Output
+    # 7. Process Output
     pil_image = generated_result.image
     image_np = np.array(pil_image).astype(np.float32) / 255.0
     image_tensor = torch.from_numpy(image_np)
