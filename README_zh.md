@@ -83,6 +83,7 @@
 - **路径**:
   - 量化模型: `ComfyUI/models/Mflux`
   - LoRA: `ComfyUI/models/loras` (建议新建一个 `Mflux` 子文件夹以保持整洁)。
+  - 从 HuggingFace 自动下载的模型（例如首次使用 Z-Image Turbo 节点时的 `filipstrand/Z-Image-Turbo-mflux-4bit`）：位于 `User/.cache/huggingface/hub`，按 `Cmd + Shift + .` 可显示隐藏的 .cache 文件夹。
 
 ## 工作流
 
@@ -91,6 +92,8 @@
 - `Mflux img2img.json`
 - `Mflux ControlNet.json`
 - `Mflux Fill/Redux/Depth` 示例 (如果有)
+- `Mflux Z-Image Turbo.json`
+- `Mflux Z-Image Turbo img2img lora.json`
 
 如果 ComfyUI 中节点显示为红色，请使用 Manager 的 “Install Missing Custom Nodes” 功能。
 
@@ -98,7 +101,8 @@
 
 - **mflux**: 感谢 [@filipstrand](https://github.com/filipstrand) 及其贡献者。
 - **raysers**: 最初的 ComfyUI 集成概念。
-- 部分代码结构参考了 **MFLUX-WEBUI**。
+- MFlux-ComfyUI 2.0.0 by **joonsoome**.
+- 部分代码结构参考了 **MFLUX-WEBUI**.
 
 ## 许可证
 

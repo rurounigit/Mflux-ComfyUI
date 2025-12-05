@@ -83,6 +83,7 @@ This version brings significant backend enhancements:
 - **Paths**:
   - Quantized models: `ComfyUI/models/Mflux`
   - LoRAs: `ComfyUI/models/loras` (create a `Mflux` subdirectory to keep them organized).
+  - Automatically downloaded models from HuggingFace (like filipstrand/Z-Image-Turbo-mflux-4bit when using the Z-Image Turbo node for the first time): `User/.cache/huggingface/hub`, press `Cmd + Shift + .` to unhide the .cache folder.
 
 ## Workflows
 
@@ -91,6 +92,8 @@ Check the `workflows` folder for JSON examples:
 - `Mflux img2img.json`
 - `Mflux ControlNet.json`
 - `Mflux Fill/Redux/Depth` examples (if available)
+- `Mflux Z-Image Turbo.json`
+- `Mflux Z-Image Turbo img2img lora.json`
 
 If nodes appear red in ComfyUI, use the Manager's "Install Missing Custom Nodes" feature.
 
@@ -98,6 +101,7 @@ If nodes appear red in ComfyUI, use the Manager's "Install Missing Custom Nodes"
 
 - **mflux** by [@filipstrand](https://github.com/filipstrand) and contributors.
 - Original ComfyUI integration concepts by **raysers**.
+- MFlux-ComfyUI 2.0.0 by **joonsoome**.
 - Some code structure inspired by **MFLUX-WEBUI**.
 
 ## License

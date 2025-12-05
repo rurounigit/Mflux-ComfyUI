@@ -1,4 +1,4 @@
-# Mflux-ComfyUI Roadmap
+# Mflux-ComfyUI Roadmap (legacy from 2.0.0 by @joonsoome)
 
 This document tracks the outstanding work required to reach full feature parity with the upstream [mflux](https://github.com/filipstrand/mflux) toolchain while keeping the ComfyUI integration stable.
 

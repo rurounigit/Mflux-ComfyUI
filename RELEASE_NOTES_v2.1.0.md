@@ -27,7 +27,7 @@ This release upgrades the backend to **mflux 0.13.1** and introduces support for
   4. Restart ComfyUI
 
 ## Usage notes
-- **Z-Image Turbo**: Use the dedicated node. It defaults to the 4-bit quantized model (`filipstrand/Z-Image-Turbo-mflux-4bit`) and 9 steps.
+- **Z-Image Turbo**: Use the dedicated node. It defaults to the 4-bit quantized model (`filipstrand/Z-Image-Turbo-mflux-4bit`) and 9 steps. This will be downloaded the first time you use it and will be saved in: `User/.cache/huggingface/hub`.Press `Cmd + Shift + .` to unhide the .cache folder.
 - **Standard Flux**: Continue using `QuickMfluxNode` for Dev/Schnell models.
 - **LoRA**: Z-Image Turbo supports LoRAs (e.g., "Technically Color").
 - **Width/Height**: Should be multiples of 16.
@@ -38,4 +38,5 @@ This release upgrades the backend to **mflux 0.13.1** and introduces support for
 
 ## Thanks
 - mflux by @filipstrand and contributors
+- MFlux-ComfyUI 2.0.0 by @joonsoome.
 - MFLUX-WEBUI by @CharafChnioune (Apache‑2.0 inspiration)
